@@ -1,0 +1,54 @@
+datasource db {
+  provider     = "postgresql"
+}
+
+
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum PromoCategory {
+  VPN
+  FINANCE
+  TECH
+  GAMING
+  APPS
+  SHOPPING
+  TRAVEL
+  OTHER
+}
+
+model Creator {
+  id           String      @id @default(cuid())
+  name         String
+  email        String      @unique
+  username     String      @unique
+  passwordHash String
+
+  avatarUrl    String?
+  bio          String?
+
+  promoCodes   PromoCode[]
+
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
+
+model PromoCode {
+  id              String        @id @default(cuid())
+  creator         Creator       @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  creatorId       String
+
+  brandName       String
+  promoCode       String
+  destinationUrl  String
+  category        PromoCategory
+  discountSummary String?
+
+  expiresAt       DateTime?
+  isActive        Boolean       @default(true)
+
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
